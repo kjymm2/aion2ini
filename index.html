@@ -79,10 +79,6 @@
 
 <script>
 const COMMON_MID = `
-; -- 로딩 분산: 인원 유입 시 로딩을 여러 프레임에 나눠 순간 끊김 완화
-s.AsyncLoadingTimeLimit=%ASYNC%
-s.LevelStreamingActorsUpdateTimeLimit=%ASYNC%
-
 ; -- 렌더 파이프라인 표준값 고정 (안정성)
 r.OneFrameThreadLag=1
 r.FinishCurrentFrame=0
@@ -118,7 +114,7 @@ r.Streaming.LimitPoolSizeToVRAM=1
 r.Streaming.MaxTempMemoryAllowed=${c.temp}
 r.Streaming.FullyLoadUsedTextures=0`;
   if(c.hlod) s += `\nr.Streaming.HLODStrategy=2`;
-  s += "\n" + COMMON_MID.replaceAll("%ASYNC%", c.async).replaceAll("%GC%", c.gc);
+  s += "\n" + COMMON_MID.replaceAll("%GC%", c.gc);
   return s;
 }
 
