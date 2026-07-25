@@ -22,6 +22,13 @@
   .note { font-size:.85rem; color:#8b98a5; line-height:1.7; }
   .note b { color:#fca5a5; }
   .hidden { display:none; }
+  /* VRAM 직접 선택 패널 */
+  .vram-guide { font-size:.9rem; color:#8b98a5; line-height:1.8; margin-bottom:12px; }
+  .vram-guide code { background:#0b1219; padding:2px 6px; border-radius:4px; color:#fbbf24; font-size:.85rem; }
+  .vram-btns { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:8px; }
+  .vram-btn { padding:12px 8px; font-size:.95rem; font-weight:700; color:#dce3ea; background:#0b1219; border:1px solid #2b3b4d; border-radius:8px; cursor:pointer; }
+  .vram-btn:hover { border-color:#5eead4; color:#5eead4; }
+  .vram-btn small { display:block; font-weight:400; font-size:.75rem; color:#8b98a5; margin-top:2px; }
 </style>
 </head>
 <body>
@@ -34,32 +41,48 @@
     <select id="gpu" onchange="pick()">
       <option value="">— 내 그래픽카드 선택 —</option>
       <optgroup label="VRAM 16GB 이상">
-        <option value="1">RTX 5090 / 5080 / 5070 Ti / 4090 / 4080</option>
-        <option value="1">RTX 4060 Ti 16GB / RX 7900 시리즈</option>
+        <option value="1">RTX 5090 / 5080 / 5070 Ti / 4090 / 4080 (SUPER)</option>
+        <option value="1">RTX 4070 Ti SUPER / 5060 Ti 16GB / 4060 Ti 16GB</option>
+        <option value="1">RX 7900 시리즈 / RX 7800 XT / 노트북 5090·5080</option>
       </optgroup>
       <optgroup label="VRAM 10~12GB">
-        <option value="2">RTX 5070 / 4070 SUPER / 4070 / 3080</option>
-        <option value="2">RTX 3060 12GB / RX 6700 XT</option>
+        <option value="2">RTX 5070 / 4070 Ti / 4070 SUPER / 4070 / 3080</option>
+        <option value="2">RTX 3060 12GB / RX 7700 XT / 6700 XT</option>
       </optgroup>
       <optgroup label="VRAM 8GB">
-        <option value="3">RTX 5060 / 4060 / 3070 / 3060 Ti</option>
-        <option value="3">RTX 2070 / 2060 SUPER / RX 6600</option>
+        <option value="3">RTX 5060 / 5060 Ti 8GB / 4060 / 3070 Ti / 3070 / 3060 Ti</option>
+        <option value="3">RTX 2070 / 2060 SUPER / RX 7600 / 6600</option>
+        <option value="3">노트북 RTX 5060 / 4070 / 4060 / 3070 (8GB)</option>
       </optgroup>
       <optgroup label="VRAM 6GB">
         <option value="4">RTX 2060 / 3050 / GTX 1660 SUPER·Ti</option>
+        <option value="4">노트북 RTX 4050 / 3060 (6GB)</option>
       </optgroup>
-      <optgroup label="VRAM 4GB 이하 / 구형">
+      <optgroup label="VRAM 4GB 이하 / 구형·노트북">
         <option value="5">GTX 1650 / 1050 Ti / RX 6500 XT / 내장그래픽</option>
       </optgroup>
-      <optgroup label="노트북 GPU (이름이 같아도 VRAM이 다릅니다)">
-        <option value="1">RTX 4090 노트북 (16GB)</option>
-        <option value="2">RTX 4080 노트북 (12GB)</option>
-        <option value="3">RTX 4070 / 4060 / 3070 / 3080 노트북 (8GB)</option>
-        <option value="4">RTX 3060 / 3050 / 2060 노트북 (6GB)</option>
-        <option value="5">GTX 1650 노트북 / MX 시리즈 (4GB 이하)</option>
+      <optgroup label="─────────────">
+        <option value="none">❓ 내 카드가 목록에 없어요 — VRAM으로 선택하기</option>
       </optgroup>
     </select>
     <div class="tierbadge" id="badge"></div>
+  </div>
+
+  <div class="card hidden" id="vramCard">
+    <h2>내 카드가 목록에 없다면 — VRAM 용량으로 선택</h2>
+    <div class="vram-guide">
+      ① <code>Ctrl+Shift+Esc</code> 작업관리자 → <b style="color:#6ee7b7">성능</b> 탭 → <b style="color:#6ee7b7">GPU</b> 클릭<br>
+      ② <code>전용 GPU 메모리</code> 숫자 확인 (예: 8.0GB)<br>
+      ③ 아래에서 해당 용량 버튼을 누르면 동일한 설정이 생성됩니다<br>
+      <span style="color:#fca5a5">※ 5060 Ti처럼 8GB/16GB로 나뉘는 모델은 반드시 이 방법으로 확인하세요</span>
+    </div>
+    <div class="vram-btns">
+      <button class="vram-btn" onclick="pickTier(1)">16GB 이상<small>티어 1</small></button>
+      <button class="vram-btn" onclick="pickTier(2)">10~12GB<small>티어 2</small></button>
+      <button class="vram-btn" onclick="pickTier(3)">8GB<small>티어 3</small></button>
+      <button class="vram-btn" onclick="pickTier(4)">6GB<small>티어 4</small></button>
+      <button class="vram-btn" onclick="pickTier(5)">4GB 이하<small>티어 5</small></button>
+    </div>
   </div>
 
   <div class="card hidden" id="iniCard">
@@ -79,7 +102,8 @@
     </ol>
     <p class="note" style="margin-top:10px;">
       <b>되돌리기:</b> 붙여넣은 블록을 삭제하고 저장하면 100% 원상복구됩니다.<br>
-      <b>주의:</b> 패치 후 파일이 초기화될 수 있으니 이 페이지를 즐겨찾기 해두세요.
+      <b>주의:</b> 패치 후 파일이 초기화될 수 있으니 이 페이지를 즐겨찾기 해두세요.<br>
+      <b>팁:</b> 저장 후 파일 우클릭 → 속성 → 읽기 전용 체크 시 패치로 초기화되는 것을 방지할 수 있습니다.
     </p>
   </div>
 </div>
@@ -99,11 +123,11 @@ gc.TimeBetweenPurgingPendingKillObjects=%GC%
 s.ForceGCAfterLevelStreamedOut=0`;
 
 const TIERS = {
-  1:{name:"티어 1 — VRAM 16GB 이상", pool:10240, temp:2048, hlod:true,  async:3, gc:120, tip:""},
-  2:{name:"티어 2 — VRAM 10~12GB",  pool:7168,  temp:1536, hlod:true,  async:3, gc:120, tip:""},
-  3:{name:"티어 3 — VRAM 8GB",      pool:4608,  temp:1024, hlod:false, async:3, gc:90,  tip:"인게임 텍스처 품질은 [보통] 이하 권장"},
-  4:{name:"티어 4 — VRAM 6GB",      pool:3072,  temp:512,  hlod:false, async:2, gc:90,  tip:"인게임 텍스처 [낮음], 대규모 전투 품질 [낮음] 이하 권장"},
-  5:{name:"티어 5 — VRAM 4GB 이하", pool:2048,  temp:512,  hlod:false, async:2, gc:60,  tip:"텍스처 [매우 낮음] + 해상도 스케일 [성능] 권장, RAM 8GB면 브라우저 종료"}
+  1:{name:"티어 1 — VRAM 16GB 이상", pool:10240, temp:2048, hlod:true,  gc:120, tip:""},
+  2:{name:"티어 2 — VRAM 10~12GB",  pool:7168,  temp:1536, hlod:true,  gc:120, tip:""},
+  3:{name:"티어 3 — VRAM 8GB",      pool:4608,  temp:1024, hlod:false, gc:90,  tip:"인게임 텍스처 품질은 [보통] 이하 권장"},
+  4:{name:"티어 4 — VRAM 6GB",      pool:3072,  temp:512,  hlod:false, gc:90,  tip:"인게임 텍스처 [낮음], 대규모 전투 품질 [낮음] 이하 권장"},
+  5:{name:"티어 5 — VRAM 4GB 이하", pool:2048,  temp:512,  hlod:false, gc:60,  tip:"텍스처 [매우 낮음] + 해상도 스케일 [성능] 권장, RAM 8GB면 브라우저 종료"}
 };
 
 function buildIni(t){
@@ -125,16 +149,34 @@ r.Streaming.FullyLoadUsedTextures=0`;
   return s;
 }
 
-function pick(){
-  const v = document.getElementById("gpu").value;
-  if(!v) return;
-  const c = TIERS[v];
+function showResult(t){
+  const c = TIERS[t];
   const badge = document.getElementById("badge");
   badge.style.display = "block";
   badge.textContent = "추천: " + c.name + (c.tip ? "  ·  " + c.tip : "");
-  document.getElementById("iniText").value = buildIni(v);
+  document.getElementById("iniText").value = buildIni(t);
   document.getElementById("iniCard").classList.remove("hidden");
   document.getElementById("howCard").classList.remove("hidden");
+}
+
+function pick(){
+  const v = document.getElementById("gpu").value;
+  if(!v) return;
+  if(v === "none"){
+    document.getElementById("vramCard").classList.remove("hidden");
+    document.getElementById("badge").style.display = "none";
+    document.getElementById("iniCard").classList.add("hidden");
+    document.getElementById("howCard").classList.add("hidden");
+    document.getElementById("vramCard").scrollIntoView({behavior:"smooth"});
+    return;
+  }
+  document.getElementById("vramCard").classList.add("hidden");
+  showResult(v);
+}
+
+function pickTier(t){
+  showResult(t);
+  document.getElementById("iniCard").scrollIntoView({behavior:"smooth"});
 }
 
 function copyIni(){
